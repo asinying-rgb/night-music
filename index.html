@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時空共振 Resonance - 柔和多色音樂網</title>
+    <style>
+        :root {
+            --pastel-blue: #a8dadc;
+            --pastel-pink: #ffb3c1;
+            --pastel-yellow: #fff3b0;
+            --pastel-purple: #c7ceea;
+            --text-color: #495057;
+        }
+        body {
+            margin: 0; padding: 0; background-color: #fcfcfc; color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative;
+        }
+        /* 滿版動態多色環境光暈 */
+        .ambient-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, var(--pastel-blue), var(--pastel-pink), var(--pastel-yellow), var(--pastel-purple));
+            background-size: 400% 400%; animation: gradient-flow 15s ease infinite;
+            filter: blur(60px); opacity: 0.6; transform: scale(1.1); z-index: -1;
+        }
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        nav {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); z-index: 10;
+        }
+        .logo { font-size: 18px; font-weight: 700; letter-spacing: 2px; color: #1d1d1f; }
+        .main-container { display: flex; flex: 1; padding: 30px; gap: 40px; overflow: hidden; z-index: 1; align-items: center; }
+        .content-section {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            background: rgba(255, 255, 255, 0.4); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .section-tag { color: #e07a5f; font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+        .main-title { font-size: 40px; font-weight: 700; margin: 0 0 16px 0; color: #1d1d1f; }
+        .description { color: #6e6e73; font-size: 15px; max-width: 480px; line-height: 1.6; margin-bottom: 24px; }
+        .glass-player {
+            background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%);
+            backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.3); border-radius: 25px; padding: 30px; width: 280px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center;
+        }
+        .cover-art { width: 220px; height: 220px; border-radius: 20px; margin: 0 auto 24px; background-size: cover; background-position: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: transform 0.5s ease; }
+        @keyframes subtle-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        .playing .cover-art { animation: subtle-pulse 3s infinite ease-in-out; }
+        .song-info h3 { margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #1d1d1f; }
+        .song-info p { margin: 0 0 20px 0; color: #86868b; font-size: 12px; font-weight: 500; }
+        .controls { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; gap: 15px; }
+        .play-btn { background: #fff; color: #e07a5f; border: 2px solid #e07a5f; width: 50px; height: 50px; border-radius: 50%; font-size: 16px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .play-btn:hover { background: #e07a5f; color: #fff; transform: scale(1.1); }
+        .progress-bar { width: 100%; height: 3px; background: rgba(0,0,0,0.04); border-radius: 2px; cursor: pointer; }
+        .progress-fill { width: 0%; height: 100%; background: var(--pastel-blue); border-radius: 2px; }
+        audio { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+    <nav><div class="logo">RESONANCE</div></nav>
+
+    <div class="main-container" id="player-container">
+        <div class="content-section">
+            <div class="section-tag">當前頻率 • 靈感隨行</div>
+            <h1 class="main-title" id="web-title">載入中...</h1>
+            <p class="description">經由 GitHub 與 Cloudinary 智慧聯動。大檔案安全隔離，文字大腦即時同步，呈現溫柔多彩的聽覺饗宴。</p>
+        </div>
+
+        <div class="glass-player">
+            <div class="cover-art" id="cover"></div>
+            <div class="song-info">
+                <h3 id="player-title">載入中...</h3>
+                <p id="player-meta">BPM --</p>
+            </div>
+            <div class="controls"><button class="play-btn" id="play-trigger">▶</button></div>
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+            <audio id="audio-core"></audio>
+        </div>
+    </div>
+
+    <script>
+        // 自動向您剛剛開好的 GitHub 讀取 songs.json 輕量大腦
+        // 請將下方網址中的「您的GitHub帳號」改成您真正的 GitHub 使用者名稱！
+        const githubUser = "您的GitHub帳號"; 
+        
+        fetch(`https://${githubUser}.github.io/night-music/songs.json`)
+            .then(res => res.json())
+            .then(data => {
+                const song = data[0];
+                document.getElementById('web-title').innerText = song.title;
+                document.getElementById('player-title').innerText = song.title;
+                document.getElementById('player-meta').innerText = `編曲：DAW 職人美學 | BPM ${song.bpm}`;
+                document.getElementById('audio-core').src = song.audio_url;
+                document.getElementById('cover').style.backgroundImage = `url('${song.cover_url}')`;
+            }).catch(err => {
+                // 如果尚未開通，先使用靜態 demo 讓網頁能動
+                document.getElementById('web-title').innerText = "心動頻率 (Remix)";
+                document.getElementById('player-title').innerText = "心動頻率 (Remix)";
+                document.getElementById('player-meta').innerText = "編曲：DAW 職人美學 | BPM 90";
+                document.getElementById('audio-core').src = "https://res.cloudinary.com/dt87kpa1q/video/upload/v1/video/guitars.mp3";
+                document.getElementById('cover').style.backgroundImage = "url('https://res.cloudinary.com/dt87kpa1q/image/upload/v1/samples/linear-creativity.jpg')";
+            });
+
+        // 播放控制
+        const audio = document.getElementById('audio-core');
+        const btn = document.getElementById('play-trigger');
+        const container = document.getElementById('player-container');
+        const progress = document.getElementById('progress');
+
+        btn.onclick = () => {
+            if (audio.paused) {
+                audio.play(); btn.innerText = "⏸"; container.classList.add('playing');
+            } else {
+                audio.pause(); btn.innerText = "▶"; container.classList.remove('playing');
+            }
+        };
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                progress.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+            }
+        };
+    </script>
+</body>
+</html>
