@@ -3,8 +3,8 @@
     "id": "night-001",
     "title": "心動頻率 (Remix)",
     "bpm": 90,
-    "audio_url": "https://res.cloudinary.com/您的CloudName/video/upload/v1/night-music/audios/heartbeat.mp3",
-    "cover_url": "https://res.cloudinary.com/您的CloudName/image/upload/v1/night-music/covers/cover.jpg",
+    "audio_url": "https://res.cloudinary.com/dt87kpa1q/video/upload/v1/night-music/audios/heartbeat.mp3",
+    "cover_url": "https://res.cloudinary.com/dt87kpa1q/image/upload/v1/night-music/covers/cover.jpg",
     "colors": ["#A8DADC", "#FFB3C1", "#FFF3B0", "#C7CEEA"]
   }
 ]
