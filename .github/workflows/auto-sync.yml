@@ -1,0 +1,29 @@
+name: Auto Sync Media to Cloudinary
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'media/**' # 只有當 media 資料夾有新歌時，機器人才會啟動
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 複製專案程式碼
+        uses: actions/checkout@v4
+
+      - name: ⚙️ 設定 Node.js 環境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 安裝 Cloudinary 工具
+        run: npm install cloudinary
+
+      - name: 🎨 AI 影音自動同步與著色
+        env:
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+        run: |
+          node .github/workflows/upload-script.js
