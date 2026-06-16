@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESONANCE - 智慧音樂上架後台</title>
+    <style>
+        body {
+            margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%); min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; color: #333;
+        }
+        .form-card {
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px;
+            padding: 40px; width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        }
+        h2 { margin: 0 0 8px 0; font-size: 22px; color: #111; font-weight: 700; }
+        .subtitle { color: #666; font-size: 13px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 8px; letter-spacing: 0.5px; }
+        input[type="text"], input[type="number"] {
+            width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px;
+            background: rgba(255,255,255,0.6); font-size: 14px; box-sizing: border-box; transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: #a8dadc; background: #fff; box-shadow: 0 0 10px rgba(168,218,220,0.4); }
+        .file-tips { font-size: 11px; color: #e07a5f; margin-top: 5px; display: block; }
+        .submit-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            background: #1d1d1f; color: #fff; font-size: 14px; font-weight: 600;
+            cursor: pointer; margin-top: 10px; transition: 0.3s;
+        }
+        .submit-btn:hover { background: #444; transform: translateY(-1px); }
+        .success-box { display: none; background: rgba(40, 167, 69, 0.1); color: #28a745; padding: 15px; border-radius: 12px; font-size: 13px; line-height: 1.5; margin-top: 15px; border: 1px dashed #28a745; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h2>🎵 歌曲上架自動化表格</h2>
+    <div class="subtitle">填寫基本資訊，系統將自動觸發 AI 著色與 Cloudinary 串聯</div>
+
+    <form id="uploadForm">
+        <div class="form-group">
+            <label>歌曲名稱</label>
+            <input type="text" id="songTitle" placeholder="例如：深夜微風" required>
+        </div>
+
+        <div class="form-group">
+            <label>音樂拍速 (BPM)</label>
+            <input type="number" id="songBpm" placeholder="例如：72" required>
+        </div>
+
+        <div class="form-group">
+            <label>音樂音訊檔名</label>
+            <input type="text" id="audioFile" placeholder="例如：breeze.mp3" required>
+            <span class="file-tips">⚠️ 請確保此檔案未來會放進電腦的 media 資料夾中</span>
+        </div>
+
+        <div class="form-group">
+            <label>專輯封面檔名</label>
+            <input type="text" id="coverFile" placeholder="例如：breeze.jpg" required>
+            <span class="file-tips">⚠️ 請確保此檔案未來會放進電腦的 media 資料夾中</span>
+        </div>
+
+        <button type="submit" class="submit-btn">產生自動化串接代碼</button>
+    </form>
+
+    <div class="success-box" id="successBox">
+        <strong>🎉 表格填寫成功！</strong><br>
+        請複製下方代碼，貼進你的 <code>songs.json</code> 最下方。GitHub 機器人偵測到後，就會<strong>自動幫你把真實檔案搬運到 Cloudinary 並啟動 AI 著色！</strong>
+        <textarea id="jsonOutput" style="width:100%; height:120px; margin-top:10px; font-family:monospace; font-size:11px; padding:5px; box-sizing:border-box;"></textarea>
+    </div>
+</div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('songTitle').value;
+        const bpm = parseInt(document.getElementById('songBpm').value);
+        const audio = document.getElementById('audioFile').value;
+        const cover = document.getElementById('coverFile').value;
+        const id = "night-" + Date.now().toString().slice(-4);
+
+        // 自動為你組裝成機器人看得懂的「未串接前置結構」
+        const newSongObj = {
+            "id": id,
+            "title": title,
+            "bpm": bpm,
+            "file": audio,
+            "cover": cover
+        };
+
+        document.getElementById('jsonOutput').value = JSON.stringify(newSongObj, null, 2) + ",";
+        document.getElementById('successBox').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
